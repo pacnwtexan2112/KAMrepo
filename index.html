@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KAMRepo - Building for me, sharing for all</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        night: {
+                            950: '#070913',
+                            900: '#0b0f19',
+                            800: '#141a2e',
+                            700: '#1a1b35',
+                            600: '#2b2d5c',
+                        },
+                        portal: {
+                            500: '#f97316',
+                            400: '#fb923c',
+                            300: '#fdba74',
+                            glow: '#ffedd5'
+                        },
+                        ice: {
+                            400: '#38bdf8',
+                            300: '#7dd3fc',
+                            200: '#bae6fd',
+                            teal: '#5eead4'
+                        },
+                        crystal: {
+                            purple: '#a855f7',
+                            cyan: '#06b6d4',
+                            blue: '#3b82f6'
+                        }
+                    },
+                    fontFamily: {
+                        pixel: ['"Press Start 2P"', 'monospace'],
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts: Press Start 2P & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        .pixelated {
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+        .portal-glow {
+            box-shadow: 0 0 30px rgba(249, 115, 22, 0.6), inset 0 0 15px rgba(251, 146, 60, 0.4);
+        }
+        .portal-glow-hover:hover {
+            box-shadow: 0 0 45px rgba(249, 115, 22, 0.85), inset 0 0 20px rgba(251, 146, 60, 0.7);
+            transform: translateY(-3px);
+        }
+        .crystal-glow {
+            box-shadow: 0 0 25px rgba(56, 189, 248, 0.25);
+        }
+        .island-card {
+            background: linear-gradient(145deg, #141a2e 0%, #0b0f19 100%);
+            border: 2px solid #2b2d5c;
+            box-shadow: 0 12px 35px -10px rgba(0, 0, 0, 0.8), 0 0 20px rgba(56, 189, 248, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .island-card:hover {
+            border-color: #38bdf8;
+            box-shadow: 0 20px 45px -15px rgba(56, 189, 248, 0.3), 0 0 30px rgba(6, 182, 212, 0.25);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0f19;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2b2d5c;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #38bdf8;
+        }
+    </style>
+</head>
+<body class="bg-night-900 text-slate-100 font-sans min-h-screen relative overflow-x-hidden selection:bg-crystal-cyan selection:text-night-950">
+
+    <!-- Canvas for Night Sky Stars & Floating Crystal Dust -->
+    <canvas id="starfield" class="fixed inset-0 pointer-events-none z-0"></canvas>
+
+    <!-- Luminous Full Moon Background Element -->
+    <div class="fixed top-10 right-12 w-64 h-64 rounded-full bg-ice-200/10 blur-3xl pointer-events-none z-0"></div>
+    <div class="fixed top-32 left-16 w-48 h-48 rounded-full bg-crystal-purple/10 blur-3xl pointer-events-none z-0"></div>
+
+    <!-- MAIN CONTAINER -->
+    <div class="relative z-10 flex flex-col min-h-screen">
+
+        <!-- HEADER / NAVIGATION -->
+        <header class="sticky top-0 z-50 backdrop-blur-md bg-night-950/85 border-b border-night-700">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+                <!-- Logo & Branding -->
+                <a href="#" class="flex items-center gap-3 group">
+                    <div class="w-10 h-10 rounded-lg bg-night-800 border-2 border-portal-500 flex items-center justify-center portal-glow transition-transform group-hover:scale-105">
+                        <span class="text-portal-400 font-pixel text-xs">KAM</span>
+                    </div>
+                    <div>
+                        <span class="font-pixel text-sm sm:text-base tracking-wider text-ice-200 block">kamrepo<span class="text-portal-400">.com</span></span>
+                        <span class="text-xs text-slate-400 font-medium hidden sm:inline-block">Building for me, sharing for all[cite: 1]</span>
+                    </div>
+                </a>
+
+                <!-- Nav Links -->
+                <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
+                    <a href="#kamauto" class="hover:text-ice-400 transition-colors">KAMAuto</a>
+                    <a href="#features" class="hover:text-ice-400 transition-colors">Features</a>
+                    <a href="#repository" class="hover:text-ice-400 transition-colors">All Apps</a>
+                    <a href="#philosophy" class="hover:text-ice-400 transition-colors">Philosophy</a>
+                    <a href="#contact" class="hover:text-ice-400 transition-colors">Contact</a>
+                </nav>
+
+                <!-- Action Button -->
+                <div class="flex items-center gap-3">
+                    <a href="#kamauto" class="bg-gradient-to-r from-portal-500 to-amber-600 hover:from-portal-400 hover:to-amber-500 text-night-950 font-pixel text-xs px-4 py-3 rounded-md portal-glow transition-all active:scale-95 shadow-lg flex items-center gap-2">
+                        <span>🚀 Get KAMAuto</span>
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- HERO SECTION -->
+        <section class="relative pt-16 pb-20 lg:pt-24 lg:pb-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full flex flex-col items-center text-center">
+            
+            <!-- Floating Dreamscape Badge -->
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-night-800/90 border border-crystal-cyan/40 text-crystal-cyan text-xs font-mono mb-8 backdrop-blur shadow-md animate-pulse">
+                <span class="w-2 h-2 rounded-full bg-crystal-cyan animate-ping"></span>
+                <span>Portal Nexus Online • Floating Island Edition</span>
+            </div>
+
+            <!-- Main Hero Title -->
+            <h1 class="font-pixel text-3xl sm:text-5xl lg:text-6xl text-slate-100 tracking-tight leading-tight max-w-4xl mb-6">
+                Building For Me, <br class="hidden sm:inline">
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-portal-400 via-ice-300 to-crystal-cyan">Sharing For All.</span>
+            </h1>
+
+            <p class="text-base sm:text-xl text-slate-300 max-w-2xl mb-12 leading-relaxed">
+                Welcome to <strong class="text-ice-200">kamrepo.com</strong>[cite: 1]. A mystical pixel-art archive of high-performance automation tools, advanced macros, indie games, and utility apps built for personal workflows and released to the universe.
+            </p>
+
+            <!-- Hero Action Buttons -->
+            <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto justify-center mb-16">
+                <a href="#kamauto" class="px-8 py-4 rounded-xl bg-gradient-to-r from-portal-500 to-portal-400 text-night-950 font-bold font-pixel text-xs portal-glow-hover transition-all flex items-center justify-center gap-3">
+                    <span>⚡ Featured: KAMAuto</span>
+                </a>
+                <a href="#repository" class="px-8 py-4 rounded-xl bg-night-800/90 hover:bg-night-700 text-slate-200 font-semibold border border-night-600 transition-all flex items-center justify-center gap-2">
+                    <span>🌌 Explore All Apps</span>
+                </a>
+            </div>
+
+        </section>
+
+        <!-- FEATURED APP: KAMAUTO AUTOCLICKER & KEYBOARD MACRO -->
+        <section id="kamauto" class="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full scroll-mt-24">
+            <div class="island-card rounded-3xl p-6 sm:p-12 relative overflow-hidden crystal-glow">
+                <!-- Atmospheric background glow representing glowing portals -->
+                <div class="absolute -right-32 -top-32 w-96 h-96 bg-portal-500/15 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -left-32 -bottom-32 w-96 h-96 bg-crystal-cyan/15 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+                    
+                    <!-- App Details & Features -->
+                    <div class="lg:col-span-7 text-left">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded bg-night-900 border border-portal-500/50 text-portal-400 font-pixel text-xs mb-4">
+                            <span>⭐ First Featured Release</span>
+                            <span>•</span>
+                            <span>v3.8.0 Stable</span>
+                        </div>
+
+                        <h2 class="font-pixel text-2xl sm:text-3xl text-slate-100 mb-4">
+                            KAMAuto <span class="text-transparent bg-clip-text bg-gradient-to-r from-portal-400 to-amber-300">Autoclicker & Keyboard Macro</span>
+                        </h2>
+
+                        <p class="text-slate-300 text-base sm:text-lg mb-6 leading-relaxed">
+                            The definitive automation suite engineered for high-speed precision clicking, complex keyboard macro playback, step-by-step scripts, and secure profile management. Share one standalone file: <code class="text-crystal-cyan bg-night-900 px-1.5 py-0.5 rounded font-mono text-xs">dist\KAMauto.exe</code>.
+                        </p>
+
+                        <!-- Key Feature Highlights -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
+                            <div class="flex items-center gap-3 p-3 rounded-xl bg-night-900/80 border border-night-700">
+                                <span class="text-crystal-cyan text-lg">⚡</span>
+                                <div>
+                                    <h4 class="font-bold text-xs text-slate-200">Sub-Millisecond Clicking</h4>
+                                    <p class="text-[11px] text-slate-400">Gaps down to a fraction of a ms</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3 p-3 rounded-xl bg-night-900/80 border border-night-700">
+                                <span class="text-portal-400 text-lg">🎯</span>
+                                <div>
+                                    <h4 class="font-bold text-xs text-slate-200">Multi-Point Pathing</h4>
+                                    <p class="text-[11px] text-slate-400">Current spot, point, or paths</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3 p-3 rounded-xl bg-night-900/80 border border-night-700">
+                                <span class="text-crystal-purple text-lg">🛡️</span>
+                                <div>
+                                    <h4 class="font-bold text-xs text-slate-200">Humanized Jitter</h4>
+                                    <p class="text-[11px] text-slate-400">Random delay & pixel offsets</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3 p-3 rounded-xl bg-night-900/80 border border-night-700">
+                                <span class="text-ice-teal text-lg">📜</span>
+                                <div>
+                                    <h4 class="font-bold text-xs text-slate-200">Advanced Scripts</h4>
+                                    <p class="text-[11px] text-slate-400">Loops, if/else, variables & colors</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex flex-wrap items-center gap-4">
+                            <button onclick="openDownloadModal('KAMAuto Autoclicker', '3.8.0', 'Automation Suite')" class="px-8 py-4 rounded-xl bg-gradient-to-r from-portal-500 to-amber-600 text-night-950 font-bold font-pixel text-xs portal-glow transition-all flex items-center gap-2">
+                                <span>📥 Download KAMAuto (.zip)</span>
+                            </button>
+                            <a href="#features" class="px-6 py-4 rounded-xl bg-night-900 hover:bg-night-700 text-ice-200 border border-crystal-cyan/40 font-semibold text-sm transition-all flex items-center gap-2">
+                                <span>🔍 View Full Features</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- App Visual Mockup / Portal Doorway Theme Box -->
+                    <div class="lg:col-span-5">
+                        <div class="bg-night-950 rounded-2xl p-6 border-2 border-crystal-cyan/30 shadow-2xl relative">
+                            <div class="absolute -top-3 right-6 bg-portal-500 text-night-950 font-pixel text-[9px] px-3 py-1 rounded-full uppercase tracking-wider font-bold">
+                                Featured Tool
+                            </div>
+
+                            <div class="flex items-center justify-between mb-6 pb-4 border-b border-night-800">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-lg bg-night-800 border border-crystal-cyan flex items-center justify-center text-crystal-cyan font-pixel text-sm">
+                                        ⚡
+                                    </div>
+                                    <div>
+                                        <h4 class="font-pixel text-xs text-slate-100">dist\KAMauto.exe</h4>
+                                        <p class="text-[11px] text-slate-400 font-mono">Status: Ready to deploy</p>
+                                    </div>
+                                </div>
+                                <span class="w-3 h-3 rounded-full bg-emerald-400 animate-ping"></span>
+                            </div>
+
+                            <div class="space-y-3 font-mono text-xs text-slate-300 mb-6 bg-night-900 p-4 rounded-xl border border-night-800">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-slate-400">Start / Stop:</span>
+                                    <span class="text-crystal-cyan">[F1] / [F2] Hotkeys</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-slate-400">Click Speed:</span>
+                                    <span class="text-portal-400">Fraction of a ms</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-slate-400">Logging:</span>
+                                    <span class="text-ice-teal">kamauto.log</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-slate-400">Security:</span>
+                                    <span class="text-emerald-400">Password-locked macros</span>
+                                </div>
+                            </div>
+
+                            <div class="text-center">
+                                <span class="text-[11px] text-slate-400 block italic">"Building for me, sharing for all." — KAMRepo[cite: 1]</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- DETAILED KAMAUTO FEATURES SHOWCASE -->
+        <section id="features" class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full scroll-mt-24">
+            <div class="text-center mb-16">
+                <span class="text-crystal-cyan font-pixel text-xs uppercase tracking-widest block mb-2">Comprehensive Capability Matrix</span>
+                <h2 class="font-pixel text-2xl sm:text-3xl text-slate-100 mb-4">KAMAuto Feature Arsenal</h2>
+                <p class="text-slate-400 max-w-2xl mx-auto text-sm sm:text-base">
+                    Discover every granular tool built into <code class="text-crystal-cyan">dist\KAMauto.exe</code> to handle clicks, macros, scripts, and profiles seamlessly.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <!-- Category 1: Clicking -->
+                <div class="island-card rounded-2xl p-6 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="w-10 h-10 rounded-xl bg-night-900 border border-portal-500/50 flex items-center justify-center text-portal-400 font-pixel text-sm">🖱️</span>
+                            <h3 class="font-pixel text-base text-slate-100">Clicking Controls</h3>
+                        </div>
+                        <ul class="space-y-3 text-sm text-slate-300 mb-6">
+                            <li class="flex items-start gap-2">
+                                <span class="text-portal-400 mt-0.5">•</span>
+                                <span>Start and stop a real autoclicker from buttons or anywhere using global <strong class="text-ice-200">F1 and F2</strong> hotkeys.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-portal-400 mt-0.5">•</span>
+                                <span>Set click intervals down to a <strong class="text-ice-200">fraction of a millisecond</strong>.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-portal-400 mt-0.5">•</span>
+                                <span>Target the current spot, one chosen point, or a custom <strong class="text-ice-200">path of several points</strong>.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-portal-400 mt-0.5">•</span>
+                                <span>Single or double click with <strong class="text-ice-200">left, right, or middle</strong> mouse buttons.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-portal-400 mt-0.5">•</span>
+                                <span>Repeat a set count, hold button down, or toggle run states.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-portal-400 mt-0.5">•</span>
+                                <span>Add <strong class="text-ice-200">random delays and pixel jitter</strong> to avoid mechanical patterns.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Category 2: Keyboard -->
+                <div class="island-card rounded-2xl p-6 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="w-10 h-10 rounded-xl bg-night-900 border border-ice-400/50 flex items-center justify-center text-ice-400 font-pixel text-sm">⌨️</span>
+                            <h3 class="font-pixel text-base text-slate-100">Keyboard Automation</h3>
+                        </div>
+                        <ul class="space-y-3 text-sm text-slate-300 mb-6">
+                            <li class="flex items-start gap-2">
+                                <span class="text-ice-400 mt-0.5">•</span>
+                                <span>Pick any key from an <strong class="text-ice-200">on-screen keyboard</strong>: letters, numbers, function keys, punctuation, modifiers, arrows, and numpad.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-ice-400 mt-0.5">•</span>
+                                <span>Type freeform shortcuts in a text field, such as <code class="text-crystal-cyan bg-night-900 px-1 py-0.5 rounded text-xs">f6</code> or <code class="text-crystal-cyan bg-night-900 px-1 py-0.5 rounded text-xs">ctrl+shift+k</code>.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-ice-400 mt-0.5">•</span>
+                                <span>Tap a key, hold it down, or <strong class="text-ice-200">expand a text snippet</strong> on a hotkey.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-ice-400 mt-0.5">•</span>
+                                <span>Modifiers automatically release when a run stops, preventing <strong class="text-ice-200">stuck Ctrl keys</strong>.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Category 3: Recording and Playback -->
+                <div class="island-card rounded-2xl p-6 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="w-10 h-10 rounded-xl bg-night-900 border border-crystal-cyan/50 flex items-center justify-center text-crystal-cyan font-pixel text-sm">🔴</span>
+                            <h3 class="font-pixel text-base text-slate-100">Recording & Playback</h3>
+                        </div>
+                        <ul class="space-y-3 text-sm text-slate-300 mb-6">
+                            <li class="flex items-start gap-2">
+                                <span class="text-crystal-cyan mt-0.5">•</span>
+                                <span>Record <strong class="text-slate-100">mouse moves, clicks, scroll wheel, and keys</strong> simultaneously.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-crystal-cyan mt-0.5">•</span>
+                                <span>Automatically drop tiny, erratic mouse tremors before playback for clean macros.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-crystal-cyan mt-0.5">•</span>
+                                <span>Adjust playback speed easily: <strong class="text-ice-200">2x speed</strong> is twice as fast, <strong class="text-ice-200">0.5 speed</strong> runs at half pace.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Category 4: Scripts -->
+                <div class="island-card rounded-2xl p-6 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="w-10 h-10 rounded-xl bg-night-900 border border-crystal-purple/50 flex items-center justify-center text-crystal-purple font-pixel text-sm">📜</span>
+                            <h3 class="font-pixel text-base text-slate-100">Advanced Scripts</h3>
+                        </div>
+                        <ul class="space-y-3 text-sm text-slate-300 mb-6">
+                            <li class="flex items-start gap-2">
+                                <span class="text-crystal-purple mt-0.5">•</span>
+                                <span>Build a step list you can <strong class="text-slate-100">add to, edit, and reorder</strong> without recording again.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-crystal-purple mt-0.5">•</span>
+                                <span>Utilize <strong class="text-ice-200">if/else, loops, variables, try/catch, and clipboard</strong> integration.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-crystal-purple mt-0.5">•</span>
+                                <span>Set breakpoints and <strong class="text-ice-200">step through one line at a time</strong>.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-crystal-purple mt-0.5">•</span>
+                                <span>Safety feature: each wait times out and gives up after <strong class="text-ice-200">5 seconds</strong> instead of freezing your computer.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-crystal-purple mt-0.5">•</span>
+                                <span>Pause a script dynamically until a chosen pixel on screen matches a target color.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Category 5: Profiles and Sharing -->
+                <div class="island-card rounded-2xl p-6 flex flex-col justify-between md:col-span-2 lg:col-span-2">
+                    <div>
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="w-10 h-10 rounded-xl bg-night-900 border border-amber-500/50 flex items-center justify-center text-amber-400 font-pixel text-sm">💾</span>
+                            <h3 class="font-pixel text-base text-slate-100">Profiles, Security & Sharing</h3>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-slate-300 mb-2">
+                            <ul class="space-y-3">
+                                <li class="flex items-start gap-2">
+                                    <span class="text-amber-400 mt-0.5">•</span>
+                                    <span>Save separate profiles directly on disk.</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <span class="text-amber-400 mt-0.5">•</span>
+                                    <span>Lock any macro file with a <strong class="text-ice-200">password</strong>.</span>
+                                </li>
+                            </ul>
+                            <ul class="space-y-3">
+                                <li class="flex items-start gap-2">
+                                    <span class="text-amber-400 mt-0.5">•</span>
+                                    <span>Maintain a local audit log of each run in <code class="text-crystal-cyan bg-night-900 px-1 py-0.5 rounded text-xs">kamauto.log</code>.</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <span class="text-amber-400 mt-0.5">•</span>
+                                    <span>Share a single executable: <code class="text-crystal-cyan bg-night-900 px-1 py-0.5 rounded text-xs">dist\KAMauto.exe</code>. Profiles and logs are automatically created next to it.</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- FULL REPOSITORY GRID (OTHER APPS) -->
+        <section id="repository" class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+            <div class="text-center mb-16">
+                <span class="text-portal-400 font-pixel text-xs uppercase tracking-widest block mb-2">Floating Islands Archive</span>
+                <h2 class="font-pixel text-2xl sm:text-3xl text-slate-100 mb-4">More Apps from the Repository</h2>
+                <p class="text-slate-400 max-w-xl mx-auto text-sm sm:text-base">
+                    Explore additional automation tools, indie games, and utilities created with the same passion.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <!-- Card 1 -->
+                <div class="island-card rounded-2xl p-6 flex flex-col justify-between group">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="w-10 h-10 rounded-xl bg-night-900 border border-crystal-cyan/50 flex items-center justify-center text-crystal-cyan font-pixel text-sm group-hover:scale-110 transition-transform">🌙</span>
+                            <span class="text-xs font-mono text-crystal-cyan bg-night-900 px-2.5 py-1 rounded border border-night-700">v1.2.0</span>
+                        </div>
+                        <h3 class="font-pixel text-lg text-slate-100 mb-2 group-hover:text-crystal-cyan transition-colors">Moonstone Platformer</h3>
+                        <p class="text-slate-400 text-sm mb-6 leading-relaxed">
+                            A pixel-art atmospheric platformer set across floating celestial islands under a glowing crescent moon.
+                        </p>
+                    </div>
+                    <div>
+                        <div class="flex flex-wrap gap-1.5 mb-6 text-xs font-mono">
+                            <span class="px-2 py-0.5 rounded bg-night-900 text-slate-400">Indie Game</span>
+                            <span class="px-2 py-0.5 rounded bg-night-900 text-slate-400">Browser / WebGL</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button onclick="openDownloadModal('Moonstone Platformer', '1.2.0', 'Indie Game')" class="flex-1 py-2.5 rounded-lg bg-portal-500 hover:bg-portal-400 text-night-950 font-bold font-pixel text-xs portal-glow transition-all flex items-center justify-center gap-2">
+                                <span>Get App</span>
+                            </button>
+                            <button onclick="openLiveDemoModal('Moonstone Platformer')" class="p-2.5 rounded-lg bg-night-900 hover:bg-night-800 text-ice-300 border border-night-700 transition-all" title="Launch Demo">
+                                👁️
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="island-card rounded-2xl p-6 flex flex-col justify-between group">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="w-10 h-10 rounded-xl bg-night-900 border border-amber-500/50 flex items-center justify-center text-amber-400 font-pixel text-sm group-hover:scale-110 transition-transform">⚙️</span>
+                            <span class="text-xs font-mono text-crystal-cyan bg-night-900 px-2.5 py-1 rounded border border-night-700">v2.1.4</span>
+                        </div>
+                        <h3 class="font-pixel text-lg text-slate-100 mb-2 group-hover:text-crystal-cyan transition-colors">DevPulse Code Snippets</h3>
+                        <p class="text-slate-400 text-sm mb-6 leading-relaxed">
+                            Lightning-fast offline code snippet manager with tag indexing, syntax color preview, and instant hotkey recall.
+                        </p>
+                    </div>
+                    <div>
+                        <div class="flex flex-wrap gap-1.5 mb-6 text-xs font-mono">
+                            <span class="px-2 py-0.5 rounded bg-night-900 text-slate-400">Utility</span>
+                            <span class="px-2 py-0.5 rounded bg-night-900 text-slate-400">Cross-Platform</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button onclick="openDownloadModal('DevPulse Snippets', '2.1.4', 'Utility')" class="flex-1 py-2.5 rounded-lg bg-portal-500 hover:bg-portal-400 text-night-950 font-bold font-pixel text-xs portal-glow transition-all flex items-center justify-center gap-2">
+                                <span>Get App</span>
+                            </button>
+                            <button onclick="openLiveDemoModal('DevPulse Snippets')" class="p-2.5 rounded-lg bg-night-900 hover:bg-night-800 text-ice-300 border border-night-700 transition-all" title="Launch Demo">
+                                👁️
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="island-card rounded-2xl p-6 flex flex-col justify-between group">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="w-10 h-10 rounded-xl bg-night-900 border border-crystal-purple/50 flex items-center justify-center text-crystal-purple font-pixel text-sm group-hover:scale-110 transition-transform">👾</span>
+                            <span class="text-xs font-mono text-crystal-cyan bg-night-900 px-2.5 py-1 rounded border border-night-700">v1.0.5</span>
+                        </div>
+                        <h3 class="font-pixel text-lg text-slate-100 mb-2 group-hover:text-crystal-cyan transition-colors">Pixel Defender Arcade</h3>
+                        <p class="text-slate-400 text-sm mb-6 leading-relaxed">
+                            Classic retro wave shooter featuring custom power-ups, retro synth sound effects, and high-score leaderboards.
+                        </p>
+                    </div>
+                    <div>
+                        <div class="flex flex-wrap gap-1.5 mb-6 text-xs font-mono">
+                            <span class="px-2 py-0.5 rounded bg-night-900 text-slate-400">Arcade Game</span>
+                            <span class="px-2 py-0.5 rounded bg-night-900 text-slate-400">Web</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button onclick="openDownloadModal('Pixel Defender Arcade', '1.0.5', 'Arcade Game')" class="flex-1 py-2.5 rounded-lg bg-portal-500 hover:bg-portal-400 text-night-950 font-bold font-pixel text-xs portal-glow transition-all flex items-center justify-center gap-2">
+                                <span>Play Now</span>
+                            </button>
+                            <button onclick="openLiveDemoModal('Pixel Defender Arcade')" class="p-2.5 rounded-lg bg-night-900 hover:bg-night-800 text-ice-300 border border-night-700 transition-all" title="Launch Demo">
+                                👁️
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- PHILOSOPHY SECTION -->
+        <section id="philosophy" class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+            <div class="bg-gradient-to-br from-night-800 to-night-950 border border-night-700 rounded-3xl p-8 sm:p-12 relative overflow-hidden shadow-2xl">
+                <div class="absolute -right-24 -bottom-24 w-96 h-96 bg-portal-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -left-24 -top-24 w-96 h-96 bg-crystal-cyan/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div class="relative z-10 max-w-3xl mx-auto text-center">
+                    <span class="text-portal-400 font-pixel text-xs uppercase tracking-widest block mb-3">Core Manifesto</span>
+                    <h2 class="font-pixel text-2xl sm:text-4xl text-slate-100 mb-6">"Building for me, sharing for all."</h2>
+                    <p class="text-slate-300 text-base sm:text-lg leading-relaxed mb-8">
+                        Every tool on <strong class="text-ice-200">kamrepo.com</strong>[cite: 1] began as a personal solution—whether automating repetitive testing tasks or building indie games. Instead of keeping them locked away, KAM shares them with the world. No bloatware, no corporate paywalls, just pure developer passion.
+                    </p>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 text-left">
+                        <div class="p-5 rounded-xl bg-night-900/90 border border-night-700">
+                            <span class="text-portal-400 font-pixel text-lg block mb-2">01</span>
+                            <h4 class="font-bold text-slate-200 mb-1">Built For Real Use</h4>
+                            <p class="text-xs text-slate-400">Tested daily in live environments and high-paced workflows.</p>
+                        </div>
+                        <div class="p-5 rounded-xl bg-night-900/90 border border-night-700">
+                            <span class="text-crystal-cyan font-pixel text-lg block mb-2">02</span>
+                            <h4 class="font-bold text-slate-200 mb-1">Open & Accessible</h4>
+                            <p class="text-xs text-slate-400">Lightweight standalone packages and instant web app previews.</p>
+                        </div>
+                        <div class="p-5 rounded-xl bg-night-900/90 border border-night-700">
+                            <span class="text-crystal-purple font-pixel text-lg block mb-2">03</span>
+                            <h4 class="font-bold text-slate-200 mb-1">Continuous Evolution</h4>
+                            <p class="text-xs text-slate-400">Frequent version releases, community feedback, and fresh drops.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer id="contact" class="mt-auto border-t border-night-700 bg-night-950 py-12 px-4 sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
+                <div>
+                    <div class="flex items-center justify-center md:justify-start gap-3 mb-2">
+                        <span class="font-pixel text-sm text-ice-200">kamrepo<span class="text-portal-400">.com</span></span>
+                    </div>
+                    <p class="text-xs text-slate-400">Building for me, sharing for all[cite: 1]. Crafted with pixel dreams and code.</p>
+                </div>
+                <div class="flex items-center gap-6 text-sm text-slate-400">
+                    <a href="#kamauto" class="hover:text-crystal-cyan transition-colors">KAMAuto</a>
+                    <a href="#features" class="hover:text-crystal-cyan transition-colors">Features</a>
+                    <a href="#repository" class="hover:text-crystal-cyan transition-colors">Apps</a>
+                    <a href="#philosophy" class="hover:text-crystal-cyan transition-colors">Philosophy</a>
+                    <a href="mailto:contact@kamrepo.com" class="hover:text-crystal-cyan transition-colors">Contact</a>
+                </div>
+                <div class="text-xs font-mono text-slate-500">
+                    © 2026 KAMRepo. All portals open.
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- MODAL POPUP FOR DOWNLOAD / PREVIEW -->
+    <div id="actionModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-night-950/85 backdrop-blur-sm hidden">
+        <div class="bg-night-800 border-2 border-portal-500/70 rounded-2xl p-6 sm:p-8 max-w-md w-full relative portal-glow animate-in fade-in zoom-in duration-200">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-100 font-mono text-lg">✕</button>
+            
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 rounded-lg bg-night-900 border border-portal-400 flex items-center justify-center text-portal-400 font-pixel text-xs">KAM</div>
+                <div>
+                    <h3 id="modalTitle" class="font-pixel text-base text-slate-100">App Download</h3>
+                    <p id="modalSubtitle" class="text-xs text-crystal-cyan font-mono">Version 3.8.0</p>
+                </div>
+            </div>
+
+            <p id="modalDescription" class="text-slate-300 text-sm mb-6 leading-relaxed">
+                You are about to access this application package. All files are verified secure for immediate deployment and execution.
+            </p>
+
+            <div class="flex flex-col gap-3">
+                <button onclick="simulateDownload()" class="w-full py-3 rounded-xl bg-gradient-to-r from-portal-500 to-amber-600 text-night-950 font-bold font-pixel text-xs portal-glow transition-all flex items-center justify-center gap-2">
+                    <span>⚡ Download Package (.zip)</span>
+                </button>
+                <button onclick="closeModal()" class="w-full py-2.5 rounded-xl bg-night-900 hover:bg-night-700 text-slate-300 font-medium text-sm transition-all">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOTIFICATION TOAST -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 bg-night-800 border-2 border-crystal-cyan text-slate-100 px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 translate-y-24 opacity-0 transition-all duration-300">
+        <span class="text-crystal-cyan text-lg">✨</span>
+        <div>
+            <h5 class="font-pixel text-xs text-crystal-cyan" id="toastTitle">Success</h5>
+            <p class="text-xs text-slate-300" id="toastMsg">Action completed successfully.</p>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- Starfield & Pixel Particle Animation ---
+        const canvas = document.getElementById('starfield');
+        const ctx = canvas.getContext('2d');
+
+        let width, height;
+        let stars = [];
+
+        function resizeCanvas() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        function initStars() {
+            stars = [];
+            const count = Math.floor((width * height) / 8000);
+            for (let i = 0; i < count; i++) {
+                stars.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    size: Math.random() * 2 + 0.5,
+                    opacity: Math.random(),
+                    twinkleSpeed: Math.random() * 0.02 + 0.005,
+                    color: Math.random() > 0.7 ? '#06b6d4' : (Math.random() > 0.4 ? '#38bdf8' : '#ffffff')
+                });
+            }
+        }
+
+        function animateStars() {
+            ctx.clearRect(0, 0, width, height);
+            
+            for (let star of stars) {
+                star.opacity += star.twinkleSpeed;
+                if (star.opacity > 1 || star.opacity < 0.2) {
+                    star.twinkleSpeed = -star.twinkleSpeed;
+                }
+
+                ctx.fillStyle = star.color;
+                ctx.globalAlpha = Math.abs(star.opacity);
+                ctx.fillRect(star.x, star.y, star.size, star.size);
+            }
+
+            requestAnimationFrame(animateStars);
+        }
+
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            initStars();
+        });
+
+        resizeCanvas();
+        initStars();
+        animateStars();
+
+        // --- Modal & Toast Handlers ---
+        const modal = document.getElementById('actionModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalSubtitle = document.getElementById('modalSubtitle');
+        const modalDescription = document.getElementById('modalDescription');
+        const toast = document.getElementById('toast');
+        const toastTitle = document.getElementById('toastTitle');
+        const toastMsg = document.getElementById('toastMsg');
+
+        function openDownloadModal(appName, version, category) {
+            modalTitle.textContent = appName;
+            modalSubtitle.textContent = `${category} • v${version}`;
+            modalDescription.textContent = `You are downloading the official release build of ${appName} from kamrepo.com. Verified safe, optimized, and ready for deployment.`;
+            modal.classList.remove('hidden');
+        }
+
+        function openLiveDemoModal(appName) {
+            modalTitle.textContent = `${appName} - Web Preview`;
+            modalSubtitle.textContent = `Interactive Demo Mode`;
+            modalDescription.textContent = `Launching the interactive browser sandbox for ${appName}. You can test core functionalities instantly right here.`;
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            modal.classList.add('hidden');
+        }
+
+        function simulateDownload() {
+            closeModal();
+            showToast('Download Started', 'Your application package is downloading successfully.');
+        }
+
+        function showToast(title, message) {
+            toastTitle.textContent = title;
+            toastMsg.textContent = message;
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-24', 'opacity-0');
+            }, 4000);
+        }
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
